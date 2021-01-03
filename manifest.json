@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "version": "0.0.2",
+  "version": "0.0.3",
   "name": "Inspect Ext JS Component",
   "description": "Inspect element for Ext JS component",
   "permissions": ["storage"],
