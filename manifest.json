@@ -17,7 +17,7 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["lib/jquery/index.js", "content-script/index.js"],
+      "js": ["content-script/index.js"],
       "all_frames": true
     }
   ]
