@@ -4,6 +4,7 @@ An extension that allows to inspect Ext JS components. Mostly inspired by [Inspe
 
 ## TODO's
 
+- [ ] Fix tests
 - [ ] Demo
 - [ ] Usage
 - [ ] Compatible Ext JS versions

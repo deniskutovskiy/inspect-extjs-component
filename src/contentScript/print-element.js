@@ -29,34 +29,36 @@ onChange('logComponent', getShouldLogComponent);
 onChange('logCustomParentComponent', getShouldLogCustomParentComponent);
 
 const fixStringEndings = str => str.replace(/[.]$/, '').replace(/[.][.]/, '.');
+const getName = node =>
+  // IE9 and non-IE
+  node.localName ||
+  // IE <= 8
+  node.tagName ||
+  node.nodeName;
+const getChildIndex = (parent, child) =>
+  [...parent.querySelectorAll(getName(child))].findIndex(x => x.outerHTML === child.outerHTML);
 
 const getNodePath = function (node) {
-  if (node.length != 1) throw 'Requires one element.';
+  if (!node) throw 'Requires an element.';
 
   let path;
-  while (node.length) {
-    const realNode = node[0];
-    let name =
-      // IE9 and non-IE
-      realNode.localName ||
-      // IE <= 8
-      realNode.tagName ||
-      realNode.nodeName;
+  while (node) {
+    let name = getName(node);
 
     // on IE8, nodeName is '#document' at the top level, but we don't need that
     if (!name || name == '#document') break;
 
     name = name.toLowerCase();
-    if (realNode.id) {
+    if (node.id) {
       // As soon as an id is found, there's no need to specify more.
-      return fixStringEndings(name + '#' + realNode.id + (path ? '>' + path : ''));
-    } else if (realNode.className) {
-      name += '.' + realNode.className.split(/\s+/).join('.');
+      return fixStringEndings(name + '#' + node.id + (path ? '>' + path : ''));
+    } else if (node.className) {
+      name += '.' + node.className.split(/\s+/).join('.');
     }
 
-    const parent = node.parent(),
-      siblings = parent.children(fixStringEndings(name));
-    if (siblings.length > 1) name += ':eq(' + siblings.index(node) + ')';
+    const parent = node.parentNode;
+    const siblings = parent.querySelectorAll(fixStringEndings(name));
+    if (siblings.length > 1) name += ':eq(' + getChildIndex(parent, node) + ')';
     path = name + (path ? '>' + path : '');
 
     node = parent;
@@ -72,7 +74,7 @@ const performCustomScript = (fn, ...args) => {
   script.remove();
 };
 
-const selectElementByPathFnStr = el => `document.querySelector("${getNodePath(jQuery(el))}")`;
+const selectElementByPathFnStr = el => `document.querySelector("${getNodePath(el)}")`;
 
 const performPrintElementScript = function (element) {
   performCustomScript(function (target) {
